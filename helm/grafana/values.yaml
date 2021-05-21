@@ -1,0 +1,32 @@
+# helm repo add bitnami https://charts.bitnami.com/bitnami
+# kubectl apply -f pv-local.yaml
+# mkdir -p /mnt/disks/grafanassd0 /mnt/disks/grafanassd1 /mnt/disks/grafanassd2 /mnt/disks/grafanassd3
+# helm install grafana bitnami/grafana --values values.yaml
+# helm uninstall grafana
+# kubectl delete pvc data-grafana-0 data-grafana-1 data-grafana-2 data-grafana-3
+# kubectl delete pv grafanadisk0 grafanadisk1 grafanadisk2 grafanadisk3
+# namespace: watch
+# configuration -> data source -> select "prometheus" -> Name "prometheus" -> HTTP -> URL "http://prometheus-kube-prometheus-prometheus.log.svc.cluster.local:9090" -> access "server(default)"  -> click "save & test"
+#dashboard -> manage -> clink import -> enter id 10000 - click Load
+
+admin:
+  user: "admin"
+  password: adminpw
+
+replicaCount: 1
+
+nodeAffinityPreset:
+  type: ""
+  key: "kubernetes.io/hostname"
+  values: ["kmaster01"]
+
+persistence:
+  enabled: true
+  storageClass: "local"
+  accessMode: ReadWriteOnce
+  size: 10Gi
+
+service:
+  type: NodePort
+  port: 3000
+  nodePort: 31567

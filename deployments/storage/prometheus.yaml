@@ -1,0 +1,47 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: prometheusdisk0
+spec:
+  capacity:
+    storage: 8Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Delete
+  storageClassName: local
+  local:
+    path: /mnt/disks/prometheusssd0
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - kmaster01
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: prometheusdisk1
+spec:
+  capacity:
+    storage: 8Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Delete
+  storageClassName: local
+  local:
+    path: /mnt/disks/prometheusssd1
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - kmaster01
+---

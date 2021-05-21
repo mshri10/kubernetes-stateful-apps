@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: express-app
+  labels:
+    app: expressjs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: expressjs
+  template:
+    metadata:
+      name: express-app
+      labels:
+        app: expressjs
+    spec:
+      containers:
+      - name: express
+        image: degitalonbording.azurecr.io/degitalonbording/backend
+        # image: bansodesatish/do-backend
+        ports:
+        - containerPort: 3000
+      imagePullSecrets:
+      - name: regcred
+      
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: expressjs
+  name: express-app
+spec:
+  ports:
+  - port: 3000
+    protocol: TCP
+    targetPort: 3000
+  selector:
+    app: expressjs
+  type: NodePort
+  

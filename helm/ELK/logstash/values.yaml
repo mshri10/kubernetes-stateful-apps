@@ -1,0 +1,62 @@
+# helm repo add elastic https://helm.elastic.co
+# kubectl apply -f storage.yaml
+# mkdir -p /mnt/disks/logstashssd0 /mnt/disks/logstashssd1 /mnt/disks/logstashssd2 /mnt/disks/logstashssd3
+# helm install logstash elastic/logstash -f values.yaml
+# helm uninstall logstash
+# kubectl delete pvc data-logstash-0 data-logstash-1 data-logstash-2 data-logstash-3
+# kubectl delete pv logstashdisk0 logstashdisk1 logstashdisk2 logstashdisk3
+# namespace: log
+---
+replicas: 1
+
+logstashConfig: 
+  logstash.yml: |
+    http.host: "0.0.0.0"
+    path.config: /usr/share/logstash/pipeline
+
+logstashPipeline: 
+  logstash.conf: |
+    # all input will come from filebeat, no local logs
+    input {
+      beats {
+        port => 5044
+      }
+    }
+    filter {
+      if [message] =~ /^\{.*\}$/ {
+        json {
+          source => "message"
+        }
+      }
+      if [ClientHost] {
+        geoip {
+          source => "ClientHost"
+        }
+      }
+    }
+    output {
+        elasticsearch {
+            hosts => [ "elasticsearch-master.db:9200" ]
+        }
+    }
+
+antiAffinity: "soft"
+
+service: 
+ type: ClusterIP
+ ports:
+   - name: beats
+     port: 5044
+     protocol: TCP
+     targetPort: 5044
+#    - name: http
+#      port: 8080
+#      protocol: TCP
+#      targetPort: 8080
+
+volumeClaimTemplate:
+  accessModes: [ "ReadWriteOnce" ]
+  storageClassName: local 
+  resources:
+    requests:
+      storage: 1Gi

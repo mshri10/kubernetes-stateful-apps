@@ -1,0 +1,81 @@
+# helm repo add bitnami https://charts.bitnami.com/bitnami
+# kubectl apply -f storage.yaml
+# mkdir -p /mnt/disks/mysqlssd0 /mnt/disks/mysqlssd1 /mnt/disks/mysqlssd2 /mnt/disks/mysqlssd3
+# helm install mysql -f values.yaml bitnami/mysql
+# helm uninstall mysql
+# kubectl delete pvc data-mysql-0 data-mysql-1 data-mysql-2 data-mysql-3
+# kubectl delete pv mysqldisk0 mysqldisk1 mysqldisk2 mysqldisk3
+
+architecture: replication
+auth:
+  ## MySQL root password
+  ## ref: https://github.com/bitnami/bitnami-docker-mysql#setting-the-root-password-on-first-run
+  ##
+  rootPassword: "IRBLVDGN5Q"
+  database: my_database
+  ##custom user to create
+  ##
+  username: "dbuser"
+  password: "DSAJDOOIJH"
+  ## MySQL replication user and password
+  ## ref: https://github.com/bitnami/bitnami-docker-mysql#setting-up-a-replication-cluster
+  ##
+  replicationUser: replicator
+  replicationPassword: "GMDCMO1X8V"
+
+primary:
+  nodeAffinityPreset:
+    type: ""
+    key: "kubernetes.io/hostname"
+    values: ["kmaster01"]
+  persistence:
+    enabled: true
+    storageClass: "local"
+    accessModes:
+      - ReadWriteOnce
+    size: 8Gi
+  service:
+    ## Service type
+    ##
+    type: ClusterIP
+    ## Service port
+    ##
+    port: 3306
+    nodePort: ""
+    ## Service clusterIP
+    ##
+    # clusterIP: None
+    clusterIP: ""
+## MySQL Secondary parameters
+##
+secondary:
+  ## Number of MySQL Secondary replicas to deploy
+  ##
+  replicaCount: 1
+  nodeAffinityPreset:
+    type: ""
+    key: "kubernetes.io/hostname"
+    values: ["kmaster01"]
+  persistence:
+    ## If true, use a Persistent Volume Claim, If false, use emptyDir
+    ##
+    enabled: true
+    storageClass: "local"
+    annotations: {}
+    accessModes:
+      - ReadWriteOnce
+    size: 8Gi
+  service:
+    type: ClusterIP
+    port: 3306
+    nodePort: ""
+    ## Service clusterIP
+    ##
+    # clusterIP: None
+    clusterIP: ""
+
+rbac:
+  ## Specifies whether RBAC rules should be created
+  ##
+  create: false
+

@@ -1,0 +1,65 @@
+# helm repo add bitnami https://charts.bitnami.com/bitnami
+# kubectl apply -f pv-local.yaml
+# mkdir -p /mnt/disks/miniossd0 /mnt/disks/miniossd1 /mnt/disks/miniossd2 /mnt/disks/miniossd3
+# helm install minio bitnami/minio --values values.yaml
+# helm uninstall minio
+# kubectl delete pvc data-minio-0 data-minio-1 data-minio-2 data-minio-3
+# kubectl delete pv miniodisk0 miniodisk1 miniodisk2 miniodisk3
+
+## MinIO(R) credentials
+##
+mode: distributed
+accessKey:
+  ## MinIO(R) Access Key
+  ## ref: https://github.com/bitnami/bitnami-docker-minio/#setting-up-minio-in-distributed-mode
+  ##
+  password: IRBLVDGN5QGMDCMO1X8V
+  ## Option to force users to specify a password. That is required for 'helm upgrade' to work properly.
+  ## If it is not force, a random password will be generated.
+  ##
+  forcePassword: true
+secretKey:
+  ## MinIO(R) Secret Key
+  ## ref: https://github.com/bitnami/bitnami-docker-minio/#setting-up-minio-in-distributed-mode
+  ##
+  password: KzS3UZKE7xqNdtRbKyfcWgxBS6P1G4kwZn4DXKuY
+  ## Option to force users to specify a password. That is required for 'helm upgrade' to work properly.
+  ## If it is not force, a random password will be generated.
+  ##
+  forcePassword: true
+persistence:
+  enabled: true
+  size: 5Gi
+  storageClass: "local"
+## MinIO(R) Service properties
+##
+service:
+  ## MinIO(R) Service type
+  ##
+  type: NodePort 
+  nodePort: 30000 
+
+securityContext:
+  enabled: true
+  fsGroup: 1000
+  runAsUser: 2000
+nodeAffinityPreset:
+  ## Node affinity type
+  ## Allowed values: soft, hard
+  ##
+  type: ""
+  ## Node label key to match
+  ## E.g.
+  ## key: "kubernetes.io/e2e-az-name"
+  ##
+  key: "kubernetes.io/hostname"
+  ## Node label values to match
+  ## E.g.
+  ## values:
+  ##   - e2e-az1
+  ##   - e2e-az2
+  ##
+  values: ["kmaster01"]
+
+
+  

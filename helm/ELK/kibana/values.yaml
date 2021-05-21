@@ -1,0 +1,15 @@
+# helm repo add elastic https://helm.elastic.co
+# helm install elasticsearch elastic/kibana -f kibana.yaml
+# helm uninstall elasticsearch
+# namespace: watch
+# management -> stack management -> kibana -> index patters -> search -> logstash* -> click create index pattern 
+# discover
+---
+elasticsearchHosts: "http://elasticsearch-master.db:9200"
+
+replicas: 1
+
+service:
+  type: NodePort
+  port: 5601
+  nodePort: "32236"

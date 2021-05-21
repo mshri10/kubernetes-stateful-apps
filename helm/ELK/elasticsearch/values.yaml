@@ -1,0 +1,28 @@
+# helm repo add elastic https://helm.elastic.co
+# kubectl apply -f storage.yaml
+# mkdir -p /mnt/disks/elasticssd0 /mnt/disks/elasticssd1 /mnt/disks/elasticssd2 /mnt/disks/elasticssd3
+# helm install elasticsearch elastic/elasticsearch -f values.yaml
+# helm uninstall elasticsearch
+# kubectl delete pvc data-elastic-0 data-elastic-1 data-elastic-2 data-elastic-3
+# kubectl delete pv elasticdisk0 elasticdisk1 elasticdisk2 elasticdisk3
+# namespace: db
+replicas: 2
+minimumMasterNodes: 2
+volumeClaimTemplate:
+  accessModes: [ "ReadWriteOnce" ]
+  storageClassName: local
+  resources:
+    requests:
+      storage: 5Gi
+antiAffinity: "soft"
+nodeAffinity: 
+  requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: kubernetes.io/hostname
+            operator: In
+            values:
+            - kmaster01
+service:
+  type: ClusterIP
+  nodePort: ""

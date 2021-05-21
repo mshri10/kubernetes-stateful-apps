@@ -1,0 +1,44 @@
+# helm repo add bitnami https://charts.bitnami.com/bitnami
+# kubectl apply -f pv-local.yaml
+# mkdir -p /mnt/disks/prometheusssd0 /mnt/disks/prometheusssd1 /mnt/disks/prometheusssd2 /mnt/disks/prometheusssd3
+# helm install prometheus bitnami/kube-prometheus --values values.yaml
+# helm uninstall prometheus
+# kubectl delete pvc data-prometheus-0 data-prometheus-1 data-prometheus-2 data-prometheus-3
+# kubectl delete pv prometheusdisk0 prometheusdisk1 prometheusdisk2 prometheusdisk3
+# namespace: log
+
+## Deploy a Prometheus instance
+##
+prometheus:
+  service:
+    type: ClusterIP 
+    port: 9090
+    # nodePort: 31284
+  nodeAffinityPreset:
+    type: ""
+    key: "kubernetes.io/hostname"
+    values: ["kmaster01"]
+  replicaCount: 1
+  persistence:
+    enabled: true
+    storageClass: "local"
+    accessModes:
+      - ReadWriteOnce
+    size: 8Gi
+
+alertmanager:
+  service:
+    type: ClusterIP
+    port: 9093
+    # nodePort: 30093
+  nodeAffinityPreset:
+    type: ""
+    key: "kubernetes.io/hostname"
+    values: ["kmaster01"]
+  replicaCount: 1
+  persistence:
+    enabled: true
+    storageClass: "local"
+    accessModes:
+      - ReadWriteOnce
+    size: 8Gi

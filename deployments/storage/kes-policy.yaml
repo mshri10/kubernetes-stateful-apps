@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+data:
+  kes-policy.hcl: |
+    path "kv/*" {
+         capabilities = [ "create", "read", "delete" ]
+    }
+kind: ConfigMap
+metadata:
+  name: kes-policy
+  namespace: vault
+---
